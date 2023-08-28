@@ -1,18 +1,29 @@
 package com.java22d.itsakerhet.Controllers;
 
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/login")
 @CrossOrigin("*")
+@Data
 public class LoginController {
 
-    @GetMapping("/")
-    public String helloUserController(){
-        return "User access level";
+    private int failedLogins = 0;
+    private boolean isCompromised = false;
+
+    @PostMapping("/")
+    public String helloUserController(Principal principal) {
+        if (principal == null) {
+            failedLogins++;
+            return "Login failed";
+        } else {
+            isCompromised = true;
+            return "User logged in";
+        }
     }
 }

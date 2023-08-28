@@ -1,14 +1,9 @@
 package com.java22d.itsakerhet.Models;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.*;
-import jdk.jfr.DataAmount;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+
 @Entity
 public class AppUser implements UserDetails {
 

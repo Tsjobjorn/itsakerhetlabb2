@@ -31,6 +31,11 @@
 <div class="right">
     <h2>Bruteforce Controls</h2>
     <!-- högra sidan vi kör bruteforce grejer på? -->
+
+    <p><strong>Login Attempts:</strong> <span th:text="${failedAttempts}"></span></p>
+    <p><strong>User Status:</strong> <span th:text="${isUserCompromised != null && isUserCompromised ? 'User has been compromised' : 'User has not been compromised'}"></span></p>
+
+
 </div>
 
 <div style="clear:both;"></div>

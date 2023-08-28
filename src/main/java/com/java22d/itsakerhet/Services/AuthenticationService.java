@@ -14,14 +14,9 @@ public class AuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
-
-
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     public AppUser registerUser(String username, String password){
-
         String encodedPassword= passwordEncoder.encode(password);
         return userRepository.save(new AppUser(0, username, encodedPassword));
     }
