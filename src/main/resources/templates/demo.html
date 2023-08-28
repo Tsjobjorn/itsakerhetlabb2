@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bruteforce Demo</title>
+    <style>
+        .left, .right {
+            float: left;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="left">
+    <h2>User Information</h2>
+    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+    <p><strong>Password:</strong> <span th:text="${password}"></span></p>
+    <p><strong>Password Encrypted:</strong> <span th:text="${user.getPassword()}"></span></p>
+
+
+
+    <h3>Change Password</h3>
+    <form th:action="@{/demo/changePassword}" method="post">
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword">
+        <input type="submit" value="Change Password">
+    </form>
+</div>
+
+<div class="right">
+    <h2>Bruteforce Controls</h2>
+    <!-- högra sidan vi kör bruteforce grejer på? -->
+</div>
+
+<div style="clear:both;"></div>
+
+</body>
+</html>
