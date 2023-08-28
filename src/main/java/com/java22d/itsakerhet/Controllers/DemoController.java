@@ -2,6 +2,7 @@ package com.java22d.itsakerhet.Controllers;
 
 import com.java22d.itsakerhet.Models.AppUser;
 import com.java22d.itsakerhet.Repositories.UserRepository;
+import com.java22d.itsakerhet.Services.BruteForceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,8 @@ public class DemoController {
 
     String rawPassword="password";
 
+    @Autowired
+    private BruteForceService bruteForceService;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -26,27 +29,21 @@ public class DemoController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private LoginController loginController;
-
     @GetMapping
     public String demoPage(Model model) {
         AppUser user = userRepository.findByUsername("user").orElse(null);
 
         model.addAttribute("user", user);
         model.addAttribute("password", rawPassword);
-        int failedAttempts = loginController.getFailedLogins();
-        Boolean isUserCompromised = loginController.isCompromised();
+        model.addAttribute("currentAttempt", bruteForceService.getCurrentAttemptString());
 
-
-
-        return "demo";  //demo.html
+        return "demo";
     }
 
     @PostMapping("/changePassword")
     @Transactional
     public String changePassword(@RequestParam String newPassword) {
-        rawPassword = newPassword;  // Uppdatera det klartextade lösenordet innan det krypteras.
+        rawPassword = newPassword;
 
         AppUser user = userRepository.findByUsername("user").orElse(null);
         if(user != null) {
@@ -55,6 +52,18 @@ public class DemoController {
         } else {
             System.out.println("Trasig länk");
         }
+        return "redirect:/demo";
+    }
+
+    @PostMapping("/startIntegerBruteForce")
+    public String setNumerals(@RequestParam int numerals) {
+        bruteForceService.startBruteForce(numerals);
+        return "redirect:/demo";
+    }
+
+    @PostMapping("/stopBruteForce")
+    public String stopBruteForce() {
+        bruteForceService.stopBruteForce();
         return "redirect:/demo";
     }
 

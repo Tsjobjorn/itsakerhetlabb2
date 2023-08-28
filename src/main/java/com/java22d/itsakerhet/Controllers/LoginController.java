@@ -13,17 +13,9 @@ import java.security.Principal;
 @Data
 public class LoginController {
 
-    private int failedLogins = 0;
-    private boolean isCompromised = false;
-
     @PostMapping("/")
-    public String helloUserController(Principal principal) {
-        if (principal == null) {
-            failedLogins++;
-            return "Login failed";
-        } else {
-            isCompromised = true;
-            return "User logged in";
-        }
+    public String helloUserController(Principal principal) { //FÖR TEST FRÅN POSTMAN
+
+        return "Logged in";
     }
 }
