@@ -60,11 +60,12 @@ public class DemoController {
 
     @PostMapping("/generatePassword")
     public String generatePassword(@RequestParam int length, @RequestParam(defaultValue = "false") boolean requireBigLetter,
-                                   @RequestParam(defaultValue = "false") boolean requireSymbol, @RequestParam(defaultValue = "false") boolean numbersOnly){
+                                   @RequestParam(defaultValue = "false") boolean requireSymbol, @RequestParam(defaultValue = "false") boolean numbersOnly,
+                                   @RequestParam(defaultValue = "false") boolean smallLetterOnly){
 
         passwordGenerator = new PasswordGenerator();
 
-        rawPassword = passwordGenerator.GeneratePassword(requireBigLetter, requireSymbol, numbersOnly,length);
+        rawPassword = passwordGenerator.GeneratePassword(requireBigLetter, requireSymbol, numbersOnly,smallLetterOnly,length);
         AppUser user = userRepository.findByUsername("user").orElse(null);
         if(user != null) {
             user.setPassword(encoder.encode(rawPassword));

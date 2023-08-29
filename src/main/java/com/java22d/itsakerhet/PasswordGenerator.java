@@ -11,13 +11,13 @@ public class PasswordGenerator {
 
     public void PrintPasswords(int amount){
         for (int i = 0; i < amount; i++) {
-            System.out.println(GeneratePassword(true, false, false, 10));
+            System.out.println(GeneratePassword(false, false, false, true, 10));
         }
     }
 
-    public String GeneratePassword(Boolean requiresCapitalLetter, Boolean requiresSymbol, Boolean numbersOnly,Integer passwordLength){
+    public String GeneratePassword(Boolean requiresCapitalLetter, Boolean requiresSymbol, Boolean numbersOnly,Boolean smallLetterOnly, Integer passwordLength){
         StringBuilder generatedPassword = new StringBuilder();
-        List<Character> charactersToUse = getCharacters(requiresCapitalLetter, requiresSymbol, numbersOnly);
+        List<Character> charactersToUse = getCharacters(requiresCapitalLetter, requiresSymbol, numbersOnly, smallLetterOnly);
         char[] numbers = "1234567890".toCharArray();
         char[] symbols = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/~".toCharArray();
         char[] bigLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -58,7 +58,7 @@ public class PasswordGenerator {
             generatedPassword.setCharAt(nextRandom, symbols[getRandomNumber(symbols.length)]);
             containsSymbol = true;
         }
-        if (!containsNumber){
+        if (!smallLetterOnly && !containsNumber){
             int nextRandom = getRandomNotUsed(generatedPassword.length(), dontUse);
             dontUse.add(nextRandom);
 
@@ -88,9 +88,13 @@ public class PasswordGenerator {
         }
         return result;
     }
-    private List<Character> getCharacters(Boolean capitalLetters, Boolean symbols, Boolean numbersOnly){
+    private List<Character> getCharacters(Boolean capitalLetters, Boolean symbols, Boolean numbersOnly, Boolean smallLetterOnly){
         if (numbersOnly){
             return toCharacterArray(getNumbers());
+        }
+
+        if (smallLetterOnly){
+            return toCharacterArray(getSmallLetters());
         }
 
         List<Character> temp = toCharacterArray(getNumbers());
