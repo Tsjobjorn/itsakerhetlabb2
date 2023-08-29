@@ -1,0 +1,25 @@
+body{
+    background-color: #151616 !important;
+}
+
+div.container.p-5.my-5.bg-dark.text-white{
+    border-radius: 8px !important;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.5) !important;
+}
+
+div.border.p-3 {
+    background-color: #3f454a;
+}
+
+div.border.p-3.mb-3.d-flex.flex-column {
+    background-color: #3f454a;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+

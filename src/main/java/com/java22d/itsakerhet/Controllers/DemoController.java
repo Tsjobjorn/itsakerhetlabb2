@@ -46,7 +46,10 @@ public class DemoController {
 
         model.addAttribute("user", user);
         model.addAttribute("password", rawPassword);
-        model.addAttribute("currentAttempt", bruteForceService.getCurrentAttemptString());
+
+        //TODO Vad gör denna?
+//        model.addAttribute("currentAttempt", bruteForceService.getCurrentAttemptString());
+//        System.out.println("*******************************Debug: " + bruteForceService.getCurrentAttemptString());
 
         return "demo";
     }
