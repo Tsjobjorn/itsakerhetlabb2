@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bruteforce Demo</title>
+    <style>
+        .left, .right {
+            float: left;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="left">
+    <h2>User Information</h2>
+    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+    <p><strong>Password:</strong> <span th:text="${password}"></span></p>
+    <p><strong>Password Encrypted:</strong> <span th:text="${user.getPassword()}"></span></p>
+
+    <h3>Change Password</h3>
+    <form th:action="@{/demo/changePassword}" method="post">
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword">
+        <input type="submit" value="Change Password">
+    </form>
+</div>
+
+<div class="right">
+    <h2>Bruteforce Controls</h2>
+    <p><strong>Login Attempts:</strong> <span th:text="${failedAttempts}"></span></p>
+    <p><strong>User Status:</strong> <span th:text="${isUserCompromised != null && isUserCompromised ? 'User has been compromised' : 'User has not been compromised'}"></span></p>
+    <p><strong>Current Attempt:</strong> <span th:text="${currentAttempt}"></span></p>
+
+    <div style="border: 1px solid #000; padding: 10px; margin-top: 10px; max-width: 300px; margin-right: auto;">
+        <h3>Integerbreaker</h3>
+        <form th:action="@{/demo/startIntegerBruteForce}" method="post" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <label for="numerals">Numerals:</label>
+                <input type="text" id="numerals" name="numerals" style="margin-right: 10px;">
+            </div>
+            <input type="submit" value="Start">
+        </form>
+
+        <!-- Adding a button to stop the brute force -->
+        <form th:action="@{/demo/stopBruteForce}" method="post" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <input type="submit" value="Stop">
+        </form>
+    </div>
+
+    <!-- Andra metoder kan läggas här likt den ovan. -->
+</div>
+
+<div style="clear:both;"></div>
+
+</body>
+</html>
