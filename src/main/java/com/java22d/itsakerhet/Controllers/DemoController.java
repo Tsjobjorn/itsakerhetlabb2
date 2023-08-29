@@ -3,6 +3,7 @@ package com.java22d.itsakerhet.Controllers;
 import com.java22d.itsakerhet.Models.AppUser;
 import com.java22d.itsakerhet.Repositories.UserRepository;
 import com.java22d.itsakerhet.Services.BruteForceService;
+import com.java22d.itsakerhet.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class DemoController {
 
     String rawPassword="password";
+
+    private PasswordGenerator passwordGenerator;
 
     @Autowired
     private BruteForceService bruteForceService;
@@ -48,6 +51,23 @@ public class DemoController {
         AppUser user = userRepository.findByUsername("user").orElse(null);
         if(user != null) {
             user.setPassword(encoder.encode(newPassword));
+            userRepository.save(user);
+        } else {
+            System.out.println("Trasig länk");
+        }
+        return "redirect:/demo";
+    }
+
+    @PostMapping("/generatePassword")
+    public String generatePassword(@RequestParam int length, @RequestParam(defaultValue = "false") boolean requireBigLetter,
+                                   @RequestParam(defaultValue = "false") boolean requireSymbol, @RequestParam(defaultValue = "false") boolean numbersOnly){
+
+        passwordGenerator = new PasswordGenerator();
+
+        rawPassword = passwordGenerator.GeneratePassword(requireBigLetter, requireSymbol, numbersOnly,length);
+        AppUser user = userRepository.findByUsername("user").orElse(null);
+        if(user != null) {
+            user.setPassword(encoder.encode(rawPassword));
             userRepository.save(user);
         } else {
             System.out.println("Trasig länk");

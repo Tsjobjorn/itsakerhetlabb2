@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class testing {
+public class PasswordGenerator {
 
     //testing t = new testing();
     //t.PrintPasswords(10);
@@ -65,7 +65,7 @@ public class testing {
             generatedPassword.setCharAt(nextRandom, numbers[getRandomNumber(numbers.length)]);
             containsNumber = true;
         }
-
+        System.out.println(generatedPassword);
         return generatedPassword.toString();
     }
     private int getRandomNotUsed(int max, List<Integer> used){
