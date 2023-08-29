@@ -40,7 +40,7 @@ public class BruteForceService {
         }
     }
 
-    boolean postUsingRestTemplate(String username, String password) {
+    public boolean postUsingRestTemplate(String username, String password) {
 
         System.out.println("Using username: " + username + " and password: " + password);
         RestTemplate restTemplate = new RestTemplate();
