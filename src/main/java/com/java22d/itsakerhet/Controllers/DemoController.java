@@ -159,7 +159,7 @@ public class DemoController {
 
     @PostMapping("/stopBruteForce")
     public String stopBruteForce() {
-        bruteForceService.stopBruteForce();
+        bruteForceService.setBruteForcing(false);
         return "redirect:/demo";
     }
 
