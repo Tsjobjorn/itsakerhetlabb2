@@ -2,6 +2,7 @@ package com.java22d.itsakerhet.Services;
 
 import com.java22d.itsakerhet.DTO.BruteForceStatistics;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,12 +17,13 @@ public class BruteForceService {
     private boolean userCompromised;
     private int failedAttempts;
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    @Autowired
+    private RestTemplate restTemplate;
 
     public void startBruteForce(int len) {
         this.failedAttempts = 0;
+        this.userCompromised= false;
         this.isBruteForcing = true;
-        System.out.println("Testing all passwords of length" + len);
-
         bruteForce(len, "");
     }
 
@@ -31,13 +33,9 @@ public class BruteForceService {
         if (len == 0) {
             this.failedAttempts++;
 
-
             if (postUsingRestTemplate("user", current)) {
-
                 System.out.println("Password cracked: " + current);
-
                 this.userCompromised = true;
-
                 return true;
             } else {
                 failedAttempts++;
@@ -55,8 +53,8 @@ public class BruteForceService {
 
     public boolean postUsingRestTemplate(String username, String password) {
 
-        System.out.println("Using username: " + username + " and password: " + password);
-        RestTemplate restTemplate = new RestTemplate();
+        //System.out.println("Using username: " + username + " and password: " + password);
+
         String url = "http://localhost:8080/login/";
         //System.out.println("DEBUG: Använder username: " + username + " och password: " + password);
         HttpHeaders headers = new HttpHeaders();
@@ -71,13 +69,13 @@ public class BruteForceService {
         try {
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (HttpClientErrorException e) {
-            System.out.println("Response Status: " + e.getStatusCode());
-            System.out.println("Login failed due to client error"); // Debugging comment
+            //System.out.println("Response Status: " + e.getStatusCode());
+            //System.out.println("Login failed due to client error"); // Debugging comment
             return false; // Login failed due to client error (likely unauthorized)
         }
 
-        System.out.println("Response Status: " + response.getStatusCode());
-        System.out.println("Response Body: " + response.getBody());
+        //System.out.println("Response Status: " + response.getStatusCode());
+        //System.out.println("Response Body: " + response.getBody());
 
         if ("Logged in".equals(response.getBody())) {
             System.out.println("Successful login attempt with password: " + password); // Debugging comment
@@ -95,8 +93,8 @@ public class BruteForceService {
         statistics.setUserCompromised(isUserCompromised());
 
         //prints out the statistics
-        System.out.println("Failed attempts: " + statistics.getFailedAttempts());
-        System.out.println("User compromised: " + statistics.isUserCompromised());
+        //System.out.println("Failed attempts: " + statistics.getFailedAttempts());
+        //System.out.println("User compromised: " + statistics.isUserCompromised());
 
         return statistics;
     }
