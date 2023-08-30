@@ -46,7 +46,7 @@ public class BruteForceService {
         }
 
         for (int i = 0; i < CHARACTERS.length(); i++) {
-            if(bruteForce(len - 1, current + CHARACTERS.charAt(i))) {
+            if (bruteForce(len - 1, current + CHARACTERS.charAt(i))) {
                 return true;
             }
         }
