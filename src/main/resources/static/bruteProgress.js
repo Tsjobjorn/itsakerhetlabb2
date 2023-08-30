@@ -7,7 +7,7 @@ function updateElements() {
             document.getElementById("failedAttempts").textContent = data.failedAttempts;
             const userStatusSpan = document.getElementById("userStatus");
             // Uppdaterar textfärgen baserat på om användaren är compromised eller inte
-            // '?' är en ternary operator som fungerar som en if-sats. Om data.userCompromised är true så sätts textfärgen till röd, annars till grön.
+            // '?' Är en ternary operator som fungerar som en if-sats. Om data.userCompromised är true så sätts textfärgen till röd, annars till grön.
             userStatusSpan.textContent = data.userCompromised ? 'User has been compromised' : 'User has not been compromised';
             userStatusSpan.style.color = data.userCompromised ? 'red' : 'green';
         })

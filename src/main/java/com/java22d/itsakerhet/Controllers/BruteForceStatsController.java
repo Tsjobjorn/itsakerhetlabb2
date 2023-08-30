@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class BruteForceStatsController {
 
     //Restcontroller som skickar tillbaka statistik om hur många misslyckade inloggningsförsök som har gjorts och om användaren är compromised eller inte.
-    //Använder sig av BruteForceService för att hämta statistiken.
-    //Skickar tillbaka ett BruteForceStatistics-objekt som innehåller antalet misslyckade inloggningsförsök och om användaren är compromised eller inte.
     private final BruteForceService bruteForceService;
 
+    // Autowired konstruktor som tar emot en BruteForceService.
     @Autowired
     public BruteForceStatsController(BruteForceService bruteForceService) {
         this.bruteForceService = bruteForceService;
     }
 
+    // Get-mapping som skickar tillbaka statistik om hur många misslyckade inloggningsförsök som har gjorts och om användaren är compromised eller inte.
     @GetMapping
     public BruteForceStatistics getBruteForceStatistics() {
         return bruteForceService.getBruteForceStatistics();

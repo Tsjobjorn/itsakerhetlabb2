@@ -79,7 +79,11 @@
         <!-- Bruteforce Controls -->
         <div class="col-md-6">
             <h2>Bruteforce Controls</h2>
+            <div class="mb-3">
+                <strong>Timer:</strong> <span id="timer">0s</span>
+            </div>
             <ul>
+
                 <li><strong>Login Attempts:</strong> <span id="failedAttempts"></span></li>
                 <li><strong>User Status:</strong> <span id="userStatus"></span></li>
             </ul>
@@ -93,12 +97,12 @@
                         <label for="numerals">Numerals:</label>
                         <input type="text" class="form-control" id="numerals" name="numerals">
                         <p></p>
-                        <button type="submit" class="btn btn-primary">Start</button>
+                        <button type="submit" id="startButton1" class="btn btn-primary">Start</button>
                     </div>
                 </form>
                 <!-- Adding a button to stop the brute force -->
                 <form th:action="@{/demo/stopBruteForce}" method="post">
-                    <button type="submit" class="btn btn-danger">Stop</button>
+                    <button type="submit" id="stopButton1" class="btn btn-danger">Stop</button>
                 </form>
             </div>
 
@@ -110,12 +114,12 @@
                         <label for="maxAttempts">Max Attempts:</label>
                         <input type="text" class="form-control" id="maxAttempts" name="maxAttempts">
                         <p></p>
-                        <button type="submit" class="btn btn-primary">Start</button>
+                        <button type="submit" id="startButton2" class="btn btn-primary">Start</button>
                     </div>
                 </form>
                 <!-- Adding a button to stop the brute force -->
                 <form th:action="@{/demo/stopCommonPasswords}" method="post">
-                    <button type="submit" class="btn btn-danger">Stop</button>
+                    <button type="submit" id="stopButton2" class="btn btn-danger">Stop</button>
                 </form>
             </div>
         </div>
@@ -124,6 +128,6 @@
 
 <!-- bruteProgress.js -->
 <script type="text/javascript" src="/bruteProgress.js"></script>
-
+<script type="text/javascript" src="/bruteTimer.js"></script>
 </body>
 </html>

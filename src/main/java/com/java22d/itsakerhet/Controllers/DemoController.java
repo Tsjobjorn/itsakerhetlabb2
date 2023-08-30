@@ -121,7 +121,6 @@ public class DemoController {
         tryingToBruteForceIntoAccountUsingACommonPassword = true;
         int currentAttempt = 0;
         String passwordToTry;
-        bruteForceService = new BruteForceService();
         try (FileInputStream fs = new FileInputStream("src/main/resources/passwords/passwords.txt");
              BufferedReader br = new BufferedReader(new InputStreamReader(fs))) {
 
@@ -129,10 +128,13 @@ public class DemoController {
                 String[] stringParts = br.readLine().split("\\s+");
                 passwordToTry = stringParts[0];
                 currentAttempt++;
+                bruteForceService.setFailedAttempts(currentAttempt);
+                System.out.println("***********************************" + bruteForceService.getFailedAttempts());
 
                 if (bruteForceService.postUsingRestTemplate("user", passwordToTry)) {
                     System.out.println((bruteForceService.postUsingRestTemplate("user", passwordToTry)));
                     tryingToBruteForceIntoAccountUsingACommonPassword = false;
+                    bruteForceService.setUserCompromised(true);
                     System.out.println("Password cracked: " + passwordToTry);
                 }
 

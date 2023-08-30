@@ -92,8 +92,8 @@ public class BruteForceService {
     public BruteForceStatistics getBruteForceStatistics() {
         BruteForceStatistics statistics = new BruteForceStatistics();
         // Populate statistics with data from your service
-        statistics.setFailedAttempts(failedAttempts);
-        statistics.setUserCompromised(UserCompromised);
+        statistics.setFailedAttempts(getFailedAttempts());
+        statistics.setUserCompromised(isUserCompromised());
 
         //prints out the statistics
         System.out.println("Failed attempts: " + statistics.getFailedAttempts());
@@ -111,12 +111,12 @@ public class BruteForceService {
         this.failedAttempts = 0;
     }
 
-    //TODO Vad gör denna?
-    public String getCurrentAttemptString() {
-        if (!isBruteForcing) {
-            return "N/A";
-        }
-        return String.format("%0" + String.valueOf(maxAttempt).length() + "d", failedAttempts);
-    }
+//    //TODO Vad gör denna?
+//    public String getCurrentAttemptString() {
+//        if (!isBruteForcing) {
+//            return "N/A";
+//        }
+//        return String.format("%0" + String.valueOf(maxAttempt).length() + "d", failedAttempts);
+//    }
 
 }
