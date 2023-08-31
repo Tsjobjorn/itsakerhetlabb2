@@ -270,14 +270,14 @@ public class DemoController {
     }
 
     @PostMapping("/startIntegerBruteForce")
-    public String setNumerals(@RequestParam int numerals) {
-        bruteForceService.startBruteForce(numerals);
+    public String setNumerals(@RequestParam int passwordLength) {
+        bruteForceService.startBruteForce(passwordLength);
         return "redirect:/demo";
     }
 
     @PostMapping("/stopBruteForce")
     public String stopBruteForce() {
-        bruteForceService.stopBruteForce();
+        bruteForceService.setBruteForcing(false);
         return "redirect:/demo";
     }
 

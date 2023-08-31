@@ -2,6 +2,7 @@ package com.java22d.itsakerhet.Services;
 
 import com.java22d.itsakerhet.DTO.BruteForceStatistics;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -12,54 +13,48 @@ import java.util.Base64;
 @Service
 @Data
 public class BruteForceService {
-    private int maxAttempt;
-    private boolean isBruteForcing = false;
+    private boolean isBruteForcing;
+    private boolean userCompromised;
+    private int failedAttempts;
+    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    @Autowired
+    private RestTemplate restTemplate;
 
-    private boolean UserCompromised = false;
-    private int failedAttempts = 0;
-
-
-    public void startBruteForce(int numerals) {
-        if(failedAttempts > 0) {
-            reset();
-        }
-        this.isBruteForcing = true;
-        this.maxAttempt = (int) Math.pow(10, numerals) - 1;
+    public void startBruteForce(int passwordLength) {
         this.failedAttempts = 0;
+        this.userCompromised= false;
+        this.isBruteForcing = true;
+        bruteForce(passwordLength, "");
+    }
 
-        System.out.println("Starting integer breaker");
+    public boolean bruteForce(int passwordLength, String current) {
+        if (!isBruteForcing) return false;
 
-        while (isBruteForcing && failedAttempts <= maxAttempt) {
-            String passwordAttempt = String.format("%0" + numerals + "d", failedAttempts);
-            if (postUsingRestTemplate("user", passwordAttempt)) {
-                System.out.println((postUsingRestTemplate("user", passwordAttempt)));
-                stopBruteForce();
-                System.out.println("Password cracked: " + passwordAttempt);
+        if (passwordLength == 0) {
+            this.failedAttempts++;
 
-                // Set user as compromised if the password is cracked
-                UserCompromised = true;
+            if (postUsingRestTemplate("user", current)) {
+                System.out.println("Password cracked: " + current);
+                this.userCompromised = true;
+                return true;
             } else {
                 failedAttempts++;
             }
-
-            System.out.println("Current attempt is: " + failedAttempts);
+            return false;
         }
 
-        if (UserCompromised) {
-            // Handle case where the password was cracked
-            System.out.println("User has been compromised.");
-        } else {
-            // Handle case where the password was not cracked
-            System.out.println("Brute force finished without finding the password.");
+        for (int i = 0; i < CHARACTERS.length(); i++) {
+            if (bruteForce(passwordLength - 1, current + CHARACTERS.charAt(i))) {
+                return true;
+            }
         }
+        return false;
     }
 
     public boolean postUsingRestTemplate(String username, String password) {
 
-        System.out.println("Using username: " + username + " and password: " + password);
-        RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8080/login/";
-        System.out.println("DEBUG: Använder username: " + username + " och password: " + password);
+
         HttpHeaders headers = new HttpHeaders();
 
         // Enkodar till basic auth. Ska vi köra json behöver vi göra en ny validering av användaren.
@@ -72,13 +67,8 @@ public class BruteForceService {
         try {
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (HttpClientErrorException e) {
-            System.out.println("Response Status: " + e.getStatusCode());
-            System.out.println("Login failed due to client error"); // Debugging comment
             return false; // Login failed due to client error (likely unauthorized)
         }
-
-        System.out.println("Response Status: " + response.getStatusCode());
-        System.out.println("Response Body: " + response.getBody());
 
         if ("Logged in".equals(response.getBody())) {
             System.out.println("Successful login attempt with password: " + password); // Debugging comment
@@ -95,32 +85,14 @@ public class BruteForceService {
         statistics.setFailedAttempts(getFailedAttempts());
         statistics.setUserCompromised(isUserCompromised());
 
-        //prints out the statistics
-        System.out.println("Failed attempts: " + statistics.getFailedAttempts());
-        System.out.println("User compromised: " + statistics.isUserCompromised());
-
         return statistics;
     }
+}
 
     public void addFailedAttempt(){
         failedAttempts++;
     }
 
 
-    public void stopBruteForce() {
-        this.isBruteForcing = false;
-    }
 
-    public void reset() {
-        this.failedAttempts = 0;
-    }
 
-//    //TODO Vad gör denna?
-//    public String getCurrentAttemptString() {
-//        if (!isBruteForcing) {
-//            return "N/A";
-//        }
-//        return String.format("%0" + String.valueOf(maxAttempt).length() + "d", failedAttempts);
-//    }
-
-}
