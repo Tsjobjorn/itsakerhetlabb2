@@ -32,6 +32,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Controller
@@ -160,8 +161,7 @@ public class DemoController {
 
     @PostMapping("/startCommonPasswordsWithThreads")
     public String startCommonPasswordsWithThreads(@RequestParam int numberOfThreads){
-
-        int currentAttempt = 0;
+        
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         String line;
@@ -178,11 +178,17 @@ public class DemoController {
         }
 
         AtomicBoolean loginSuccessFlag = new AtomicBoolean(false);
+        AtomicInteger loginAttemptCount = new AtomicInteger(0);
 
         for (int i = 0; i < numberOfThreads; i++) {
-            executorService.submit(new LoginTask(passwordQueue, loginSuccessFlag));
+            executorService.submit(new LoginTask(passwordQueue, loginSuccessFlag, loginAttemptCount));
         }
 
+        while(!loginSuccessFlag.get()){
+            bruteForceService.setFailedAttempts(loginAttemptCount.get());
+        }
+
+        bruteForceService.setUserCompromised(loginSuccessFlag.get());
         executorService.shutdown();
         return "redirect:/demo";
     }
@@ -190,10 +196,12 @@ public class DemoController {
     static class LoginTask implements Runnable {
 
         private AtomicBoolean loginSuccessful;
+        private AtomicInteger loginAttempts;
         private BlockingQueue<String> passwordQueue;
 
-        public LoginTask(BlockingQueue<String> passwordQueue, AtomicBoolean loginSuccessful) {
+        public LoginTask(BlockingQueue<String> passwordQueue, AtomicBoolean loginSuccessful, AtomicInteger loginAttempts) {
             this.loginSuccessful = loginSuccessful;
+            this.loginAttempts = loginAttempts;
             this.passwordQueue = passwordQueue;
         }
 
@@ -203,6 +211,7 @@ public class DemoController {
             while (true) {
                 try {
                     password = passwordQueue.poll(1, TimeUnit.SECONDS); // Poll with timeout
+                    loginAttempts.incrementAndGet();
                     if (password == null) {
                         // Queue is empty, no more passwords to process
                         return;
