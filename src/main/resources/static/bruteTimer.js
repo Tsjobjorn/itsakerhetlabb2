@@ -23,6 +23,10 @@ document.getElementById('startButton2').addEventListener('click', function() {
     startTimer();
 });
 
+document.getElementById('startButton3').addEventListener('click', function() {
+    startTimer();
+});
+
 document.getElementById('stopButton1').addEventListener('click', function() {
     stopTimer();
 });

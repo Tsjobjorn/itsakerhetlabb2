@@ -27,11 +27,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @Controller
@@ -165,62 +165,91 @@ public class DemoController {
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         String line;
+        BlockingQueue<String> passwordQueue = new LinkedBlockingQueue<>();
         try (FileInputStream fs = new FileInputStream("src/main/resources/passwords/passwords.txt");
              BufferedReader br = new BufferedReader(new InputStreamReader(fs))) {
 
             while ((line = br.readLine()) != null) {
                 String[] stringParts = line.split("\\s+");
-
-                LoginTask loginTask = new LoginTask(stringParts[0]);
-                executorService.submit(loginTask);
-                currentAttempt++;
-                //System.out.println("Thread id: "+Thread.currentThread().getId());
-                //int activeThreadCount = ((ThreadPoolExecutor) executorService).getActiveCount();
-                //System.out.println("Active Threads: " + activeThreadCount);
-
-                if (loginTask.isLoginSuccessful()){
-                    System.out.println("Login successful for password: "+ stringParts[0]);
-                    tryingToBruteForceIntoAccountUsingACommonPassword = false;
-                    bruteForceService.setUserCompromised(true);
-                    break;
-                }
-
-                bruteForceService.addFailedAttempt();
-
-
+                passwordQueue.put(stringParts[0]);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("passwords.txt is probably missing!");
         }
+
+        AtomicBoolean loginSuccessFlag = new AtomicBoolean(false);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            executorService.submit(new LoginTask(passwordQueue, loginSuccessFlag));
+        }
+
         executorService.shutdown();
         return "redirect:/demo";
     }
 
     static class LoginTask implements Runnable {
-        private String password;
-        private boolean loginSuccessful;
 
-        public LoginTask(String password) {
-            this.password = password;
-        }
+        private AtomicBoolean loginSuccessful;
+        private BlockingQueue<String> passwordQueue;
 
-        public boolean isLoginSuccessful(){
-            return loginSuccessful;
+        public LoginTask(BlockingQueue<String> passwordQueue, AtomicBoolean loginSuccessful) {
+            this.loginSuccessful = loginSuccessful;
+            this.passwordQueue = passwordQueue;
         }
 
         @Override
         public void run(){
-            String url = "http://localhost:8080/login/";
+            String password;
+            while (true) {
+                try {
+                    password = passwordQueue.poll(1, TimeUnit.SECONDS); // Poll with timeout
+                    if (password == null) {
+                        // Queue is empty, no more passwords to process
+                        return;
+                    }
+                    if (attemptLogin("user",password)) {
+                        loginSuccessful.set(true);
+                        return;
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+
+        private boolean attemptLogin(String username, String password){
+
+            System.out.println("Using username: " + username + " and password: " + password);
             RestTemplate restTemplate = new RestTemplate();
-            org.springframework.http.HttpHeaders headers = new HttpHeaders();
-            String authValue = "Basic " + Base64.getEncoder().encodeToString(("user" + ":" + password).getBytes());
+            String url = "http://localhost:8080/login/";
+            System.out.println("DEBUG: Använder username: " + username + " och password: " + password);
+            HttpHeaders headers = new HttpHeaders();
+
+            // Enkodar till basic auth. Ska vi köra json behöver vi göra en ny validering av användaren.
+            String authValue = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
             headers.set("Authorization", authValue);
 
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, requestEntity, String.class);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            if (responseEntity.getStatusCode().is2xxSuccessful()){
-                loginSuccessful = true;
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            } catch (HttpClientErrorException e) {
+                System.out.println("Response Status: " + e.getStatusCode());
+                System.out.println("Login failed due to client error"); // Debugging comment
+                return false; // Login failed due to client error (likely unauthorized)
+            }
+
+            System.out.println("Response Status: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.getBody());
+
+            if ("Logged in".equals(response.getBody())) {
+                System.out.println("Successful login attempt with password: " + password); // Debugging comment
+                return true; // Successful login
+            } else {
+                System.out.println("Failed login attempt with password: " + password); // Debugging comment
+                return false; // Login failed
             }
         }
     }
