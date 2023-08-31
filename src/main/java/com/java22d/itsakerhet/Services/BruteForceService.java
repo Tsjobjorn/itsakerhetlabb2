@@ -89,9 +89,7 @@ public class BruteForceService {
     }
 }
 
-    public void addFailedAttempt(){
-        failedAttempts++;
-    }
+
 
 
 
