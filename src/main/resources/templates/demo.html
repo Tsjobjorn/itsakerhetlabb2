@@ -122,6 +122,19 @@
                     <button type="submit" id="stopButton2" class="btn btn-danger">Stop</button>
                 </form>
             </div>
+
+            <!-- Common Passwords Form -->
+            <div class="border p-3">
+                <h3>Threads Version</h3>
+                <form th:action="@{/demo/startCommonPasswordsWithThreads}" method="post">
+                    <div class="form-group">
+                        <label for="numberOfThreads">Number of threads:</label>
+                        <input type="text" class="form-control" id="numberOfThreads" name="numberOfThreads">
+                        <p></p>
+                        <button type="submit" id="startButton3" class="btn btn-primary">Start</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

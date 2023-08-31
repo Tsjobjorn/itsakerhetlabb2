@@ -102,6 +102,10 @@ public class BruteForceService {
         return statistics;
     }
 
+    public void addFailedAttempt(){
+        failedAttempts++;
+    }
+
 
     public void stopBruteForce() {
         this.isBruteForcing = false;
