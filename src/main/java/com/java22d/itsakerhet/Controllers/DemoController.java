@@ -160,8 +160,7 @@ public class DemoController {
     }
 
     @PostMapping("/startCommonPasswordsWithThreads")
-    public String startCommonPasswordsWithThreads(@RequestParam int numberOfThreads){
-        
+    public String startCommonPasswordsWithThreads(@RequestParam int numberOfThreads) {
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         String line;
@@ -184,7 +183,7 @@ public class DemoController {
             executorService.submit(new LoginTask(passwordQueue, loginSuccessFlag, loginAttemptCount));
         }
 
-        while(!loginSuccessFlag.get()){
+        while (!loginSuccessFlag.get()) {
             bruteForceService.setFailedAttempts(loginAttemptCount.get());
         }
 

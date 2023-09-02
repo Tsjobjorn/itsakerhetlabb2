@@ -67,6 +67,7 @@ public class BruteForceService {
         try {
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (HttpClientErrorException e) {
+//            System.out.println("Failed login attempt with password: " + password); // Debugging comment
             return false; // Login failed due to client error (likely unauthorized)
         }
 
