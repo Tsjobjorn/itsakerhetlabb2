@@ -17,4 +17,4 @@ function updateElements() {
 }
 
 // Uppdaterar HTML-elementen varje 10 millisekunder
-setInterval(updateElements, 10); // 1000 milliseconds (1 second)
+setInterval(updateElements, 1000); // 1000 milliseconds (1 second)

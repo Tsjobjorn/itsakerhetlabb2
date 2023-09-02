@@ -1,5 +1,6 @@
 let timerInterval; // To store the interval ID
 let startTime; // To store the start time
+let finalTime; // To store the final time
 
 function startTimer() {
     startTime = Date.now();
@@ -7,8 +8,12 @@ function startTimer() {
 }
 
 function updateTimer() {
+
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
     document.getElementById('timer').textContent = `${elapsedTime}s`;
+    finalTime = elapsedTime;
+    console.log(finalTime);
+
 }
 
 function stopTimer() {

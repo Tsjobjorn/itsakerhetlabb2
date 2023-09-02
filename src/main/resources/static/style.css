@@ -9,6 +9,7 @@ div.container.p-5.my-5.bg-dark.text-white{
 
 div.border.p-3 {
     background-color: #3f454a;
+    margin-bottom: 20px;
 }
 
 div.border.p-3.mb-3.d-flex.flex-column {
